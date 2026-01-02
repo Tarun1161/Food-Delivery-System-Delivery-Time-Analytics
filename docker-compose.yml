@@ -1,0 +1,24 @@
+services:
+  db:
+    image: mysql:8
+    container_name: food_delivery_db
+    environment:
+      MYSQL_ROOT_PASSWORD: 1161
+      MYSQL_DATABASE: food_delivery
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+
+  api:
+    build: .
+    container_name: food_delivery_api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql+pymysql://root:1161@db:3306/food_delivery
+    ports:
+      - "8000:8000"
